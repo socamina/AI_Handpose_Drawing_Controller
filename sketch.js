@@ -6,11 +6,13 @@ let predictions = [];
 let canvas2;
 
 function setup() {
-  pixelDensity(1);
+  // pixelDensity(1);
   createCanvas(640, 480);
   canvas2 = createGraphics(640, 480);
-  //background(255,100);
- // createCanvas(windowWidth, windowHeight);
+
+  //createCanvas(windowWidth, windowHeight);
+  //canvas2 = createGraphics(windowWidth, windowHeight);
+
   noStroke();
   video = createCapture(VIDEO);
   setTimeout(() => {
@@ -25,14 +27,12 @@ function setup() {
   // ml5
   handpose = ml5.handpose(video, modelLoaded.bind(this));
 
-
   // This sets up an event that fills the global variable "predictions"
   // with an array every time new hand poses are detected
-  handpose.on("predict", results => {
+  handpose.on("predict", (results) => {
     //console.log(results);
     //objects, annotations, object, thumb
     predictions = results;
-    
   });
 
   // Hide the video element, and just show the canvas
@@ -52,7 +52,7 @@ function draw() {
   image(video, 0, 0, width, height);
   // background(255,0,0,30);
 
-  if(predictions.length > 0){
+  if (predictions.length > 0) {
     let hand = predictions[0];
     let thumb = hand.annotations.thumb;
     let index = hand.annotations.indexFinger;
@@ -68,34 +68,32 @@ function draw() {
 
     push();
     canvas2.noStroke();
-    canvas2.fill(255, 0, 0,200);
-    //ellipse(x, y, w, [h])
-    canvas2.ellipse(thumbTip[0], thumbTip[1],10,10);
+    canvas2.fill(255, 0, 0, 200);
+    canvas2.ellipse(thumbTip[0], thumbTip[1], 10, 10);
     pop();
 
-    push();
-    canvas2. noStroke();
-    canvas2.fill(255, 153, 0,200);
-    canvas2.ellipse(indexTip[0] , indexTip[1] ,10,10);
-    // line(pindexTip[0], pindexTip[1],indexTip[0], indexTip[1]);
-    pop();
-
-    push();
-    canvas2. noStroke();
-    canvas2.fill(255, 251, 0,200);
-    canvas2.ellipse(middleFingerTip[0] , middleFingerTip[1] ,10,10);
-    pop();
-    
     push();
     canvas2.noStroke();
-    canvas2. fill(60, 255, 0,200);
-    canvas2.ellipse(ringFingerTip[0] , ringFingerTip[1] ,10,10);
+    canvas2.fill(255, 153, 0, 200);
+    canvas2.ellipse(indexTip[0], indexTip[1], 10, 10);
     pop();
 
     push();
-    canvas2. noStroke();
-    canvas2. fill(0, 255, 250,200);
-    canvas2. ellipse(pinkyTip[0] , pinkyTip[1] ,10,10);
+    canvas2.noStroke();
+    canvas2.fill(255, 251, 0, 200);
+    canvas2.ellipse(middleFingerTip[0], middleFingerTip[1], 10, 10);
+    pop();
+
+    push();
+    canvas2.noStroke();
+    canvas2.fill(60, 255, 0, 200);
+    canvas2.ellipse(ringFingerTip[0], ringFingerTip[1], 10, 10);
+    pop();
+
+    push();
+    canvas2.noStroke();
+    canvas2.fill(0, 255, 250, 200);
+    canvas2.ellipse(pinkyTip[0], pinkyTip[1], 10, 10);
     pop();
     // push();
     // stroke(255,0,0);
@@ -104,10 +102,9 @@ function draw() {
     // pop();
   }
 
-
   // We can call both functions to draw all keypoints and the skeletons
- // drawKeypoints();
- image(canvas2,0,0,windowWidth/2,windowHeight/2)
+  // drawKeypoints();
+  image(canvas2, 0, 0, windowWidth/2, windowHeight/2);
 }
 
 //A function to draw ellipses over the detected keypoints
