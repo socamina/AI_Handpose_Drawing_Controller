@@ -1,16 +1,30 @@
-let handpose;
-let video;
+let newWidth = 0;
+let newHeight = 0;
+let ratio = 1;
+let handpose = null;
 let predictions = [];
+let canvas2;
 
 function setup() {
   pixelDensity(1);
   createCanvas(640, 480);
+  canvas2 = createGraphics(640, 480);
   //background(255,100);
-  // createCanvas(windowWidth, windowHeight);
+ // createCanvas(windowWidth, windowHeight);
+  noStroke();
   video = createCapture(VIDEO);
-  video.size(windowWidth, windowHeight);
+  setTimeout(() => {
+    console.log(video.width, video.height); // 640->480
+    // Avec les vraies dimensions de la video on peut faire les calculs de redimensionnement
+    // On obtiendra un ratio à appliquer à nos points de posehand, car ils sont calculés sur la video non resizée
+    newWidth = windowWidth;
+    ratio = newWidth / video.width;
+    newHeight = video.height * ratio;
+  }, 1000);
 
-  handpose = ml5.handpose(video, modelReady);
+  // ml5
+  handpose = ml5.handpose(video, modelLoaded.bind(this));
+
 
   // This sets up an event that fills the global variable "predictions"
   // with an array every time new hand poses are detected
@@ -53,38 +67,36 @@ function draw() {
     let pinkyTip = pinky[3];
 
     push();
-    noStroke();
-    fill(255, 0, 0,200);
+    canvas2.noStroke();
+    canvas2.fill(255, 0, 0,200);
     //ellipse(x, y, w, [h])
-    ellipse(thumbTip[0], thumbTip[1],10,10);
+    canvas2.ellipse(thumbTip[0], thumbTip[1],10,10);
     pop();
 
     push();
-    noStroke();
-    fill(255, 153, 0,200);
-    ellipse(indexTip[0], indexTip[1],10,10);
+    canvas2. noStroke();
+    canvas2.fill(255, 153, 0,200);
+    canvas2.ellipse(indexTip[0] , indexTip[1] ,10,10);
     // line(pindexTip[0], pindexTip[1],indexTip[0], indexTip[1]);
     pop();
 
     push();
-    noStroke();
-    fill(255, 251, 0,200);
-    ellipse(middleFingerTip[0], middleFingerTip[1],10,10);
+    canvas2. noStroke();
+    canvas2.fill(255, 251, 0,200);
+    canvas2.ellipse(middleFingerTip[0] , middleFingerTip[1] ,10,10);
     pop();
     
     push();
-    noStroke();
-    fill(60, 255, 0,200);
-    ellipse(ringFingerTip[0], ringFingerTip[1],10,10);
+    canvas2.noStroke();
+    canvas2. fill(60, 255, 0,200);
+    canvas2.ellipse(ringFingerTip[0] , ringFingerTip[1] ,10,10);
     pop();
 
     push();
-    noStroke();
-    fill(0, 255, 250,200);
-    ellipse(pinkyTip[0], pinkyTip[1],10,10);
+    canvas2. noStroke();
+    canvas2. fill(0, 255, 250,200);
+    canvas2. ellipse(pinkyTip[0] , pinkyTip[1] ,10,10);
     pop();
-    
-
     // push();
     // stroke(255,0,0);
     // strokeWeight(3);
@@ -94,10 +106,11 @@ function draw() {
 
 
   // We can call both functions to draw all keypoints and the skeletons
-  //drawKeypoints();
+ // drawKeypoints();
+ image(canvas2,0,0,windowWidth/2,windowHeight/2)
 }
 
-// A function to draw ellipses over the detected keypoints
+//A function to draw ellipses over the detected keypoints
 // function drawKeypoints() {
 //   for (let i = 0; i < predictions.length; i += 1) {
 //     const prediction = predictions[i];
@@ -107,6 +120,15 @@ function draw() {
 //       noStroke();
 //       ellipse(keypoint[0], keypoint[1], 10, 10);
 //       //draws an elllipse at each xy posiition of the landmarks
+// const keypoint = prediction.landmarks[j];
+//       //on dessine les points, en n'oubliant pas qu'on a aggrandit l'affichage.
+//       circle(keypoint[0] * ratio, keypoint[1] * ratio, 10);
 //     }
 //   }
 // }
+
+function modelLoaded() {
+  handpose.on("predict", (results) => {
+    predictions = results;
+  });
+}
